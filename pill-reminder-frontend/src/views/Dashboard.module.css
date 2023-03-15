@@ -1,0 +1,22 @@
+.Dashboard {
+    background-color: #31124d;
+}
+
+.Main {
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    margin: auto;
+    min-height: calc(100vh - 4em);
+    max-width: 80em;
+    background-color: rgb(148, 184, 216);
+    box-shadow: 0px 0px 100px black;
+}
+
+.Main section {
+    padding: 2em;
+    height: 100%;
+    /* background-color: white; */
+    /* min-height: 600px; */
+    /* border-bottom: 1px solid black; */
+}

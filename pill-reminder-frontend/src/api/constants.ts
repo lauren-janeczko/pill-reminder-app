@@ -1,0 +1,1 @@
+export const API = "https://uiebesbolh.execute-api.us-east-2.amazonaws.com/Prod/pill-handler"

@@ -1,0 +1,35 @@
+.Viewer {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 100%;
+}
+
+.Viewer > h1 {
+    font-size: 3.0em;
+}
+
+table {
+    width: 100%;
+    /* background-color: white; */
+    padding: 2em 0em;
+    font-size: 1.15em;
+}
+table tr {
+    width: 100%;
+}
+table tr:nth-child(1) {
+    background-color: rgb(10, 112, 82);
+}
+table tr:nth-child(2n) > td {
+    background-color: rgb(55, 117, 128);
+}
+table tr:nth-child(2n-1) > td {
+    background-color: rgb(92, 39, 112);
+}
+
+table tr td, table tr th {
+    text-align: center;
+    padding: 0.75em 0em;
+    color: white;
+}
