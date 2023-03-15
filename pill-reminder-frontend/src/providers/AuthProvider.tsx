@@ -1,21 +1,23 @@
 import { createContext, createEffect, JSXElement, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 import { AuthSchema, defaultAuthResponse } from "../api/schemas/auth.schema";
-import { authenticateUser, SignInData, signInUser, SignUpData, signUpUser } from "../api/userHandler";
+import {DeleteUserData, handleUser, SignInData, SignUpData } from "../api/userHandler";
+import { ResponseError } from "../utils/api";
 
 
 interface AuthContextStore {
     authenticated: boolean;
-    authToken: string;
-    userId: string;
+    auth_token: string;
+    user_id: string;
     err?: string | object;
 }
 
 interface AuthContextDispatch {
     authenticate: () => Promise<AuthSchema>;
     signIn: (data: (SignInData)) => Promise<void>;
-    signUp: (data: SignUpData) => Promise<void>;
-    signOut: () => Promise<void>
+    signUp: (data: SignUpData) => Promise<boolean>;
+    signOut: () => Promise<void>;
+    deleteAccount: (data: DeleteUserData) => Promise<void>
 }
 
 type AuthContextData = [
@@ -26,14 +28,15 @@ type AuthContextData = [
 
 const defaultAuthStore: AuthContextStore = {
     authenticated: false,
-    authToken: "",
-    userId: "",
+    auth_token: "",
+    user_id: "",
 }
 const defaultAuthDispatch: AuthContextDispatch = {
     authenticate: async () => defaultAuthResponse,
     signIn: async (data) => { console.warn("Not implemented", data) },
-    signUp: async (data) => { console.warn("Not implemented", data) },
+    signUp: async (data) => { console.warn("Not implemented", data); return false },
     signOut: async() => { console.warn("Not implemented") },
+    deleteAccount: async (data) => { console.warn("Not implemented", data) },
 }
 const defaultContextData: AuthContextData = [
     defaultAuthStore,
@@ -51,45 +54,58 @@ export const AuthProvider = (props: AuthProviderProps) => {
     const [authStore, setAuthStore] = createStore<AuthContextStore>(defaultAuthStore)
 
     const authenticate = async() => {
-        const result = await authenticateUser();
+        const result = await handleUser("auth");
         setAuthStore(() => result);
 
         return result
     }
 
     const signIn = async(data: SignInData) => {
-        const result = await signInUser(data)
+        const result = await handleUser("sign-in", data)
+        console.info("Sign In", result)
+        localStorage.setItem("auth_token", result.authToken)
+        localStorage.setItem("user_id", result.user_id)
         setAuthStore(() => result)
     }
 
-    const signUp = async(data: SignUpData) => {
-        const result = await signUpUser(data)
+    const signUp = async(data: SignUpData): Promise<boolean> => {
+        const result = await handleUser("sign-up", data)
+        console.info("Sign Up", result)
         setAuthStore(() => result)
+        if (!result.err && result.name && result.user_id) return true
+        return false
     }
 
     const signOut = async() => {
         localStorage.removeItem("user_id")
         localStorage.removeItem("auth_token")
-        setAuthStore("authToken", "")
-        setAuthStore("userId", "")
+        setAuthStore("auth_token", "")
+        setAuthStore("user_id", "")
         setAuthStore("authenticated", false)
+    }
+
+    const deleteAccount = async(data: DeleteUserData) => {
+        const result = await handleUser("delete-account", data)
+        console.info(result)
+        setAuthStore(() => defaultAuthStore)
     }
 
     const authDispatch: AuthContextDispatch = {
         authenticate,
         signIn,
         signUp,
-        signOut
+        signOut,
+        deleteAccount
     }
 
     const authFromCookie = (): AuthContextStore => {
-        const authToken = localStorage.getItem("auth_token") ?? ""
-        const userId = localStorage.getItem("user_id") ?? ""
-        const authenticated = !!authToken && !!userId
+        const auth_token = localStorage.getItem("auth_token") ?? ""
+        const user_id = localStorage.getItem("user_id") ?? ""
+        const authenticated = !!auth_token && !!user_id
         const result: AuthContextStore = {
             authenticated,
-            authToken,
-            userId
+            auth_token: auth_token,
+            user_id: user_id
         }
         return result
     }
@@ -97,8 +113,8 @@ export const AuthProvider = (props: AuthProviderProps) => {
     createEffect(() => {
         console.info("AuthStore updated!",
             authStore.authenticated,
-            authStore.authToken,
-            authStore.userId,
+            authStore.auth_token,
+            authStore.user_id,
             authStore.err
         )
     })

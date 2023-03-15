@@ -1,6 +1,5 @@
-import { dbQuery, error, ResponseError, PromiseOrError, generateNewId, required } from '../utils';
+import { dbQuery, error, PromiseOrError, generateNewId, required } from '../utils';
 import { ScheduleFrequency, ScheduleSchema } from '../schemas/schedule.schema';
-import { isNumber } from 'util';
 
 export type AddScheduleData = Omit<ScheduleSchema, "id">;
 export type AddScheduleResponse = Omit<ScheduleSchema, "user_id">
@@ -20,8 +19,6 @@ export function addSchedule(data: AddScheduleData): PromiseOrError<AddScheduleRe
         if (!required(user_id, pill_name, dosage, time, frequency)) {
             resolve(error("Required arguments are missing", 200));
         }
-        // if (!required(time.hours, time.minutes)) { resolve(error("Time is invalid", 200)) }
-
         if  (frequency === ScheduleFrequency.Custom) {
             if (!custom_frequency) resolve(error("Custom frequency must not be empty", 200));
         }

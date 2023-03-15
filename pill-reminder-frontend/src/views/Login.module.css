@@ -1,5 +1,5 @@
 .LoginBg {
-    background-color: rgb(68, 175, 157);
+    background-color: var(--pill-theme-green);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,9 +9,9 @@
 }
 
 .LoginBox {
-    background-color: blueviolet;
+    background-color: var(--pill-theme-purple);
     width: 500px;
-    height: 750px;
+    min-height: 600px;
     padding: 2em;
     border-radius: 50px;
     box-shadow: 5px 6px 12px black;
@@ -34,7 +34,8 @@
     margin-bottom: 1.5em;
     width: 100%;
     padding: 1em;
-    font-size: 0.5em;
+    font-size: 0.6em;
+    color: rgb(81, 12, 121);
 }
 
 .FormSubmitBox {
