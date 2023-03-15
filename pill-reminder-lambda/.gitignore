@@ -5,6 +5,8 @@
 # Removing template since there are env variables
 # template.yaml
 
+./README.md
+
 ### Linux ###
 *~
 
